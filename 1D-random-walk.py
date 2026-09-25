@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import random
 import matplotlib.pyplot as plt
 import time
@@ -83,19 +84,31 @@ def P_numerical(xi:int, t:int, p:float, N:int):
 
 
 def main():
-    t = 20
-    prob_dict = P_numerical(x, t, p, 100000)
-    x_values = prob_dict.keys()
-    P_values = prob_dict.values()
+    w = 0.27
+
+    prob_dict_20 = P_numerical(x, 20, p, 100000)
+    prob_dict_30 = P_numerical(x, 30, p, 100000)
+    prob_dict_50 = P_numerical(x, 50, p, 100000)
+
+    x_20, P_20 = np.array(list(prob_dict_20.keys())), np.array(list(prob_dict_20.values()))
+    x_30, P_30 = np.array(list(prob_dict_30.keys())), np.array(list(prob_dict_30.values()))
+    x_50, P_50 = np.array(list(prob_dict_50.keys())), np.array(list(prob_dict_50.values()))
 
     plt.figure(figsize=(16, 9))
-    plt.bar(x_values, P_values, color='#000080')
-    plt.xticks(range(-t, t+1, 2))
-    plt.title(f'1 Dimensional Unbiased Random Walk (t = {t})')
-    plt.xlabel('Position (x)')
-    plt.ylabel('Probability, P(x, t)')
-    plt.grid(True)
-    #plt.savefig(f'1D-unbiased-random-walk_numerical_t={t}.png', dpi=300, bbox_inches='tight')
+    plt.bar(x_20 - w, P_20, width=w, color='#0D6EFD', label='t = 20', edgecolor='#0D6EFD')
+    plt.bar(x_30,     P_30, width=w, color='#FFC107', label='t = 30', edgecolor='#FFC107')
+    plt.bar(x_50 + w, P_50, width=w, color='#D90429', label='t = 50', edgecolor='#D90429')
+
+    plt.title('1-Dimensional Unbiased Random Walk (Numerical Simulation)', fontsize=16, fontweight='bold', pad=15)
+    plt.xlabel('Position (x)', fontsize=12, labelpad=10)
+    plt.ylabel('Probability, P(x, t)', fontsize=12, labelpad=10)
+
+    plt.grid(True, linestyle='--', alpha=0.5, zorder=0)
+    plt.gca().set_axisbelow(True)
+
+    plt.legend(fontsize=12, frameon=True, facecolor='white')
+    plt.tight_layout()
+    plt.savefig(f'1D-unbiased-random-walk_numerical_combined.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 
