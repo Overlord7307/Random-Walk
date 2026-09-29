@@ -52,7 +52,7 @@ def P_analytical(x:int, t:int):
 
 def P_numerical(xi:int, t:int, p:float, N:int):
     '''
-    Runs N number of random walks and returns a dictionary containing probabilities of attaining all final positions.
+    Runs N number of random walks and returns a dictionary containing probabilities of attaining all final positions. Prints time taken to run the simulation.
 
     xi (int): initial position
     t (int): total number of steps to be taken
@@ -60,6 +60,8 @@ def P_numerical(xi:int, t:int, p:float, N:int):
     N (int): number of random walks to be simulated
     '''
     ti = time.time()
+
+    # Simulate random walk N times and store frequency of each final position in a dictionary
     freq_dict = {}
     for i in range(0, N):
         pos = random_walk(xi, t, p)
@@ -68,6 +70,7 @@ def P_numerical(xi:int, t:int, p:float, N:int):
         else:
             freq_dict[pos] = 1
 
+    # Convert frequency into probability
     prob_dict = {}
     for j in freq_dict.keys():
         prob_dict[j] = freq_dict[j] / N
@@ -83,21 +86,72 @@ def P_numerical(xi:int, t:int, p:float, N:int):
     return prob_dict
 
 
-def main():
-    w = 0.27
+def second_moment(t:int, p:float, N:int):
+    '''
+    Simulates N random walks and stores squares of the final positions. Returns average of all squares.
 
+    t (int): total number of steps to be taken
+    p (float): probability of taking a step to the right at every t
+    N (int): number of random walks to be simulated
+    '''
+    xf_squared = []
+    for i in range(0, N):
+        xf = random_walk(0, t, p)
+        xf_squared.append(xf**2)
+
+    return np.mean(xf_squared)
+
+
+def plot_second_moment(p:float, N:int):
+    '''
+    Plots the second moment as a function of t.
+    '''
+    ti = time.time()
+    t_values = range(0, 101)
+
+    y_values = []
+    for i in t_values:
+        y_values.append(second_moment(i, p, N))
+
+    tf = time.time()
+    print(f'Time elapsed: {tf - ti} sec')
+
+    plt.scatter(t_values, y_values, label='<x\u00B2>', color='red')
+
+    plt.title('Second Moment vs t')
+    plt.xlabel('Total Number of Steps (t)')
+    plt.ylabel('<x\u00B2>')
+
+    plt.grid(True)
+    plt.legend()
+    plt.savefig('second-moment-vs-t.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+def gaussian(x):
+    return (2 / ((2*np.pi)**0.5)) * np.exp(-(x**2) / 2)
+
+
+def plot_prob(x:int, p:float):
+    '''
+    Plots P(x, t) vs x for t = 20, 30 and 50.
+    '''
     prob_dict_20 = P_numerical(x, 20, p, 100000)
     prob_dict_30 = P_numerical(x, 30, p, 100000)
     prob_dict_50 = P_numerical(x, 50, p, 100000)
 
-    x_20, P_20 = np.array(list(prob_dict_20.keys())), np.array(list(prob_dict_20.values()))
-    x_30, P_30 = np.array(list(prob_dict_30.keys())), np.array(list(prob_dict_30.values()))
-    x_50, P_50 = np.array(list(prob_dict_50.keys())), np.array(list(prob_dict_50.values()))
+    x_20, P_20 = np.array(list(prob_dict_20.keys())) / (20**0.5), np.array(list(prob_dict_20.values())) * (20**0.5)
+    x_30, P_30 = np.array(list(prob_dict_30.keys())) / (30**0.5), np.array(list(prob_dict_30.values())) * (30**0.5)
+    x_50, P_50 = np.array(list(prob_dict_50.keys())) / (50**0.5), np.array(list(prob_dict_50.values())) * (50**0.5)
+
+    x_smooth = np.linspace(-10, 10, 1000)
 
     plt.figure(figsize=(16, 9))
-    plt.bar(x_20 - w, P_20, width=w, color='#0D6EFD', label='t = 20', edgecolor='#0D6EFD')
-    plt.bar(x_30,     P_30, width=w, color='#FFC107', label='t = 30', edgecolor='#FFC107')
-    plt.bar(x_50 + w, P_50, width=w, color='#D90429', label='t = 50', edgecolor='#D90429')
+    plt.scatter(x_20, P_20, color='#0D6EFD', label='t = 20')
+    plt.scatter(x_30,     P_30, color='#FFC107', label='t = 30')
+    plt.scatter(x_50, P_50, color='#D90429', label='t = 50')
+
+    plt.plot(x_smooth, gaussian(x_smooth), label='Gaussian', color='magenta', linestyle='--')
 
     plt.title('1-Dimensional Unbiased Random Walk (Numerical Simulation)', fontsize=16, fontweight='bold', pad=15)
     plt.xlabel('Position (x)', fontsize=12, labelpad=10)
@@ -108,9 +162,13 @@ def main():
 
     plt.legend(fontsize=12, frameon=True, facecolor='white')
     plt.tight_layout()
-    plt.savefig(f'1D-unbiased-random-walk_numerical_combined.png', dpi=300, bbox_inches='tight')
+    #plt.savefig(f'1D-unbiased-random-walk_numerical_gussian-fit.png', dpi=300, bbox_inches='tight')
     plt.show()
+    
 
+def main():
+    plot_second_moment(p, 100000)
+    
 
 if __name__ == "__main__":
     main()
