@@ -6,6 +6,7 @@ import time
 
 x = 0
 p = 0.5
+N = 100000
 
 
 def random_walk(xi:int, t:int, p:float):
@@ -75,7 +76,7 @@ def P_numerical(xi:int, t:int, p:float, N:int):
     for j in freq_dict.keys():
         prob_dict[j] = freq_dict[j] / N
 
-    for k in range(-t, t+1):
+    for k in range(xi - t, xi + t + 1):
         if (k not in prob_dict.keys()):
             prob_dict[k] = 0
 
@@ -104,7 +105,7 @@ def second_moment(t:int, p:float, N:int):
 
 def plot_second_moment(p:float, N:int):
     '''
-    Plots the second moment as a function of t.
+    Plots the second moment as a function of t. Prints time taken to execute.
     '''
     ti = time.time()
     t_values = range(0, 101)
@@ -116,15 +117,15 @@ def plot_second_moment(p:float, N:int):
     tf = time.time()
     print(f'Time elapsed: {tf - ti} sec')
 
-    plt.scatter(t_values, y_values, label='<x\u00B2>', color='red')
+    plt.plot(t_values, y_values, label=r'$\langle x^2 \rangle$', marker='o', color='red')
 
-    plt.title('Second Moment vs t')
-    plt.xlabel('Total Number of Steps (t)')
-    plt.ylabel('<x\u00B2>')
+    plt.title(r'Second Moment vs Time', fontsize=14)
+    plt.xlabel(r'Total Number of Steps $(t)$', fontsize=12)
+    plt.ylabel(r'Second Moment of Final Position $\langle x^2 \rangle$', fontsize=12)
 
     plt.grid(True)
     plt.legend()
-    plt.savefig('second-moment-vs-t.png', dpi=300, bbox_inches='tight')
+    plt.savefig('plots\\second-moment-vs-t_python.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 
@@ -162,12 +163,12 @@ def plot_prob(x:int, p:float):
 
     plt.legend(fontsize=12, frameon=True, facecolor='white')
     plt.tight_layout()
-    #plt.savefig(f'1D-unbiased-random-walk_numerical_gussian-fit.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'plots\\1D-unbiased-random-walk_numerical_gussian-fit.png', dpi=300, bbox_inches='tight')
     plt.show()
     
 
 def main():
-    plot_second_moment(p, 100000)
+    plot_second_moment(p, N)
     
 
 if __name__ == "__main__":
