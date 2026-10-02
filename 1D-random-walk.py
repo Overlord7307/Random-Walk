@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import pandas as pd
 import random
 import matplotlib.pyplot as plt
 import time
@@ -108,7 +109,7 @@ def plot_second_moment(p:float, N:int):
     Plots the second moment as a function of t. Prints time taken to execute.
     '''
     ti = time.time()
-    t_values = range(0, 101)
+    t_values = list(range(0, 101))
 
     y_values = []
     for i in t_values:
@@ -117,6 +118,7 @@ def plot_second_moment(p:float, N:int):
     tf = time.time()
     print(f'Time elapsed: {tf - ti} sec')
 
+    plt.figure(figsize=(16, 9))
     plt.plot(t_values, y_values, label=r'$\langle x^2 \rangle$', marker='o', color='red')
 
     plt.title(r'Second Moment vs Time', fontsize=14)
@@ -127,6 +129,9 @@ def plot_second_moment(p:float, N:int):
     plt.legend()
     plt.savefig('plots\\second-moment-vs-t_python.png', dpi=300, bbox_inches='tight')
     plt.show()
+
+    df = pd.DataFrame({'Time':t_values, 'SecondMoment':y_values})
+    df.to_csv('second-moment-data_python.csv', index=False)
 
 
 def gaussian(x):
