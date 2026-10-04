@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 
 x = 0   # Initial position
-p = 0.73     # Probability of taking a step to the right
+p = 1.0     # Probability of taking a step to the right
 N = 100000  # Number of simulations to run
 
 
@@ -118,15 +118,15 @@ def plot_second_moment(p:float, N:int):
     plt.figure(figsize=(16, 9))
     plt.plot(t_values, y_values, label=r'Numerical $\langle x^2 \rangle$', marker='o', color='#FF7F0E')
 
-    plt.plot(t_values, second_moment_analytical(t_values, p), label=r'Analytical $\langle x^2 \rangle = t(2p - 1) + t^2(2p - 1)^2$', linestyle='--', color='#000080')
+    plt.plot(t_values, second_moment_analytical(t_values, p), label=r'Analytical $\langle x^2 \rangle = 4tp(1 - p) + t^2(2p - 1)^2$', linestyle='--', color='#000080')
 
-    plt.title(r'Second Moment vs Time $(p = 0.73)$', fontsize=14)
+    plt.title(r'Second Moment vs Time $(p = 1)$', fontsize=14)
     plt.xlabel(r'Total Number of Steps $(t)$', fontsize=12)
     plt.ylabel(r'Second Moment of Final Position $\langle x^2 \rangle$', fontsize=12)
 
     plt.grid(True)
     plt.legend()
-    plt.savefig('plots\\second-moment-vs-t_biased.png', dpi=300, bbox_inches='tight')
+    plt.savefig('plots\\second-moment-vs-t_asymmetric.png', dpi=300, bbox_inches='tight')
     plt.show()
 
     #df = pd.DataFrame({'Time':t_values, 'SecondMoment':y_values})
@@ -140,7 +140,7 @@ def gaussian(x):
 def second_moment_analytical(t:list, p:float):
     output = []
     for i in t:
-        output.append(t[i] * (2*p - 1) + (t[i] * (2*p - 1))**2)
+        output.append(4*t[i] * p * (1 - p) + (t[i] * (2*p - 1))**2)
 
     return output
 
@@ -153,9 +153,11 @@ def plot_prob(x:int, p:float):
     prob_dict_30 = dict(sorted(P_numerical(x, 30, p, N).items()))
     prob_dict_50 = dict(sorted(P_numerical(x, 50, p, N).items()))
 
-    x_20, P_20 = np.array(list(prob_dict_20.keys())) / (20**0.5), np.array(list(prob_dict_20.values())) * (20**0.5)
-    x_30, P_30 = np.array(list(prob_dict_30.keys())) / (30**0.5), np.array(list(prob_dict_30.values())) * (30**0.5)
-    x_50, P_50 = np.array(list(prob_dict_50.keys())) / (50**0.5), np.array(list(prob_dict_50.values())) * (50**0.5)
+    x_20, P_20 = np.array(list(prob_dict_20.keys())), np.array(list(prob_dict_20.values()))
+    x_30, P_30 = np.array(list(prob_dict_30.keys())), np.array(list(prob_dict_30.values()))
+    x_50, P_50 = np.array(list(prob_dict_50.keys())), np.array(list(prob_dict_50.values()))
+
+    x_smooth = np.linspace(-10, 10, 1000)
 
     plt.figure(figsize=(16, 9))
     plt.plot(x_20, P_20, marker='o', color='#0D6EFD', label='t = 20')
@@ -164,7 +166,7 @@ def plot_prob(x:int, p:float):
 
     #plt.plot(x_smooth, gaussian(x_smooth), label='Gaussian', color='magenta', linestyle='--')
 
-    plt.title(r'1-Dimensional Biased Random Walk $(p = 0.73)$', fontsize=16, fontweight='bold', pad=15)
+    plt.title(r'Totally Asymmetric 1D Random Walk $(p = 1)$', fontsize=16, fontweight='bold', pad=15)
     plt.xlabel(r'Position $(x)$', fontsize=12, labelpad=10)
     plt.ylabel(r'Probability, $P(x, t)$', fontsize=12, labelpad=10)
 
@@ -173,7 +175,7 @@ def plot_prob(x:int, p:float):
 
     plt.legend(fontsize=12, frameon=True, facecolor='white')
     plt.tight_layout()
-    plt.savefig(f'plots\\1D-biased-random-walk_numerical.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'plots\\1D-asymmetric-random-walk_numerical.png', dpi=300, bbox_inches='tight')
     plt.show()
     
 
