@@ -5,9 +5,9 @@ import random
 import matplotlib.pyplot as plt
 import time
 
-x = 0
-p = 0.5
-N = 100000
+x = 0   # Initial position
+p = 0.73     # Probability of taking a step to the right
+N = 100000  # Number of simulations to run
 
 
 def random_walk(xi:int, t:int, p:float):
@@ -77,9 +77,6 @@ def P_numerical(xi:int, t:int, p:float, N:int):
     for j in freq_dict.keys():
         prob_dict[j] = freq_dict[j] / N
 
-    for k in range(xi - t, xi + t + 1):
-        if (k not in prob_dict.keys()):
-            prob_dict[k] = 0
 
     tf = time.time()
     time_elapsed = tf - ti
@@ -119,56 +116,64 @@ def plot_second_moment(p:float, N:int):
     print(f'Time elapsed: {tf - ti} sec')
 
     plt.figure(figsize=(16, 9))
-    plt.plot(t_values, y_values, label=r'$\langle x^2 \rangle$', marker='o', color='red')
+    plt.plot(t_values, y_values, label=r'Numerical $\langle x^2 \rangle$', marker='o', color='#FF7F0E')
 
-    plt.title(r'Second Moment vs Time', fontsize=14)
+    plt.plot(t_values, second_moment_analytical(t_values, p), label=r'Analytical $\langle x^2 \rangle = t(2p - 1) + t^2(2p - 1)^2$', linestyle='--', color='#000080')
+
+    plt.title(r'Second Moment vs Time $(p = 0.73)$', fontsize=14)
     plt.xlabel(r'Total Number of Steps $(t)$', fontsize=12)
     plt.ylabel(r'Second Moment of Final Position $\langle x^2 \rangle$', fontsize=12)
 
     plt.grid(True)
     plt.legend()
-    plt.savefig('plots\\second-moment-vs-t_python.png', dpi=300, bbox_inches='tight')
+    plt.savefig('plots\\second-moment-vs-t_biased.png', dpi=300, bbox_inches='tight')
     plt.show()
 
-    df = pd.DataFrame({'Time':t_values, 'SecondMoment':y_values})
-    df.to_csv('second-moment-data_python.csv', index=False)
+    #df = pd.DataFrame({'Time':t_values, 'SecondMoment':y_values})
+    #df.to_csv('second-moment-data_python.csv', index=False)
 
 
 def gaussian(x):
     return (2 / ((2*np.pi)**0.5)) * np.exp(-(x**2) / 2)
 
 
+def second_moment_analytical(t:list, p:float):
+    output = []
+    for i in t:
+        output.append(t[i] * (2*p - 1) + (t[i] * (2*p - 1))**2)
+
+    return output
+
+
 def plot_prob(x:int, p:float):
     '''
     Plots P(x, t) vs x for t = 20, 30 and 50.
     '''
-    prob_dict_20 = P_numerical(x, 20, p, 100000)
-    prob_dict_30 = P_numerical(x, 30, p, 100000)
-    prob_dict_50 = P_numerical(x, 50, p, 100000)
+    prob_dict_20 = dict(sorted(P_numerical(x, 20, p, N).items()))
+    prob_dict_30 = dict(sorted(P_numerical(x, 30, p, N).items()))
+    prob_dict_50 = dict(sorted(P_numerical(x, 50, p, N).items()))
 
     x_20, P_20 = np.array(list(prob_dict_20.keys())) / (20**0.5), np.array(list(prob_dict_20.values())) * (20**0.5)
     x_30, P_30 = np.array(list(prob_dict_30.keys())) / (30**0.5), np.array(list(prob_dict_30.values())) * (30**0.5)
     x_50, P_50 = np.array(list(prob_dict_50.keys())) / (50**0.5), np.array(list(prob_dict_50.values())) * (50**0.5)
 
-    x_smooth = np.linspace(-10, 10, 1000)
-
     plt.figure(figsize=(16, 9))
-    plt.scatter(x_20, P_20, color='#0D6EFD', label='t = 20')
-    plt.scatter(x_30,     P_30, color='#FFC107', label='t = 30')
-    plt.scatter(x_50, P_50, color='#D90429', label='t = 50')
+    plt.plot(x_20, P_20, marker='o', color='#0D6EFD', label='t = 20')
+    plt.plot(x_30, P_30, marker='o', color='#FFC107', label='t = 30')
+    plt.plot(x_50, P_50, marker='o', color='#D90429', label='t = 50')
 
-    plt.plot(x_smooth, gaussian(x_smooth), label='Gaussian', color='magenta', linestyle='--')
+    #plt.plot(x_smooth, gaussian(x_smooth), label='Gaussian', color='magenta', linestyle='--')
 
-    plt.title('1-Dimensional Unbiased Random Walk (Numerical Simulation)', fontsize=16, fontweight='bold', pad=15)
-    plt.xlabel('Position (x)', fontsize=12, labelpad=10)
-    plt.ylabel('Probability, P(x, t)', fontsize=12, labelpad=10)
+    plt.title(r'1-Dimensional Biased Random Walk $(p = 0.73)$', fontsize=16, fontweight='bold', pad=15)
+    plt.xlabel(r'Position $(x)$', fontsize=12, labelpad=10)
+    plt.ylabel(r'Probability, $P(x, t)$', fontsize=12, labelpad=10)
 
     plt.grid(True, linestyle='--', alpha=0.5, zorder=0)
     plt.gca().set_axisbelow(True)
 
     plt.legend(fontsize=12, frameon=True, facecolor='white')
     plt.tight_layout()
-    plt.savefig(f'plots\\1D-unbiased-random-walk_numerical_gussian-fit.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'plots\\1D-biased-random-walk_numerical.png', dpi=300, bbox_inches='tight')
     plt.show()
     
 

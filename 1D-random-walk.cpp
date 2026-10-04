@@ -8,9 +8,9 @@
 #include <utility>
 
 
-int xi = 0;
-double p = 0.5;
-int N = 100000;
+int xi = 0;     // Initial position
+double p = 0.5;     // Probability of taking a step to the right
+int N = 100000;     // Number of simulations to run
 
 
 int random_walk(int xi, int t, double p, std::mt19937& gen) {
