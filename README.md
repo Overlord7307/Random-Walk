@@ -2,8 +2,20 @@
 
 In this project, I consider a particle _walking_ with unit steps along a one-dimensional line for $t$ time steps starting from initial position $x_i$. At every time step, the probability that the particle will take a unit step towards the right (towards positive $x$) is given by $p$. Then, $(1 - p)$ denotes the probability of taking a unit step towards the right. This setup makes up the function `random_walk()`, which returns the particle's final position after $t$ steps.
 
-Next, a Monte-Carlo simulation runs $N$ random walks for $t$ time each and stores the number of times each final position appears in a frequency dictionary. Normalizing by $N$ then yields the probability dictionary. I plot the probability $P(x, t)$ against $x$ for $t = 20, 30, 50$ and compare the results with the analytical probability distribution function found using the binomial formula: $$P(x, t) = \binom{t}{\frac{t + x}{2}} \ p^{\frac{t + x}{2}} \ (1 - p)^{\frac{t - x}{2}}.$$ These plots are shown in `1D-unbiased-random-walk_numerical_combined.png` and `1D-unbiased-random-walk_analytical.png` respectively. I also scale both axes of the $P(x, t)$ vs $x$ curve by $\sqrt{t}$ to show that it lies perfectly on the standard normal distribution $\mathcal{N}(0, 1)$ regardless of $t$. This is shown in `1D-unbiased-random-walk_numerical_gussian-fit.png`.
+Next, a Monte-Carlo simulation runs $N$ random walks for $t$ time each and stores the number of times each final position appears in a frequency dictionary. Normalizing by $N$ then yields the probability dictionary. I plot the probability $P(x, t)$ against $x$ for $t = 20, 30, 50$ and compare the results with the analytical probability distribution function found using the binomial formula:
 
-The next step is to visualize the mean squared final position $\langle x^2 \rangle$ as it varies with $t$. The function `plot_second_moment()` calls `second_moment()` for every $t = 0, 1, 2, \dots 100$, which results in the graph `second-moment-vs-t_python.png`. I do the same for the biased case $(0.5 < p < 1.0)$ and the totally asymmetric case $(p = 1)$, and compare the plots with the analytical expression given by: $$\langle x^2 \rangle = 4tp(1 - p) + t^2 (2p - 1)^2.$$ The results can be seen in `second-moment-vs-t_biased.png` and `second-moment-vs-t_asymmetric.png` respectively.
+$$
+P(x, t) = \binom{t}{\frac{t + x}{2}} \ p^{\frac{t + x}{2}} \ (1 - p)^{\frac{t - x}{2}}.
+$$
+
+These plots are shown in `1D-unbiased-random-walk_numerical_combined.png` and `1D-unbiased-random-walk_analytical.png` respectively. I also scale both axes of the $P(x, t)$ vs $x$ curve by $\sqrt{t}$ to show that it lies perfectly on the standard normal distribution $\mathcal{N}(0, 1)$ regardless of $t$. This is shown in `1D-unbiased-random-walk_numerical_gussian-fit.png`.
+
+The next step is to visualize the mean squared final position $\langle x^2 \rangle$ as it varies with $t$. The function `plot_second_moment()` calls `second_moment()` for every $t = 0, 1, 2, \dots 100$, which results in the graph `second-moment-vs-t_python.png`. I do the same for the biased case $(0.5 < p < 1.0)$ and the totally asymmetric case $(p = 1)$, and compare the plots with the analytical expression given by:
+
+$$
+\langle x^2 \rangle = 4tp(1 - p) + t^2 (2p - 1)^2.
+$$
+
+The results can be seen in `second-moment-vs-t_biased.png` and `second-moment-vs-t_asymmetric.png` respectively.
 
 Finally, for the sake of efficiency, I write the functions `random_walk()`, `P_numerical()` and `second_moment()` in C++ and compare the execution time with my Python implementation. This yields a much faster execution of the same physics. I also compare the raw data from both programs to ensure that they produce the same results in `second-moment-vs-t_cpp-vs-python.png`.
