@@ -139,12 +139,19 @@ int main() {
     }
     */
 
-    // Calculate time required to execute the function
+    // Calculate time required to execute the function    
     auto start_time = std::chrono::high_resolution_clock::now();
-    auto sm_results = second_moment(p, N);
+    auto [t_values, mean_values] = second_moment(p, N);
     auto end_time = std::chrono::high_resolution_clock::now();
 
-    export_second_moment_to_csv(sm_results, "second-moment-data_cpp.csv");
+    std::cout << std::left << std::setw(10) << "Time (t)" 
+              << "Avg(x^2)\n";
+    std::cout << "------------------------\n";
+
+    for (size_t i = 0; i < t_values.size(); ++i) {
+        std::cout << std::left << std::setw(10) << t_values[i] 
+                  << mean_values[i] << "\n";
+    }
 
     std::chrono::duration<double> duration = end_time - start_time;
     std::cout << "Time elapsed: " << duration.count() << " sec" << std::endl;
